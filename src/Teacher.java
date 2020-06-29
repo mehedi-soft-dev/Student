@@ -103,7 +103,7 @@ public class Teacher {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        String query = "SELECT st.StudentId StudentId, st.FirstName FirstName, st.LastName LastName, st.Email Email \n" +
+        String query = "SELECT st.Id Id, st.FirstName FirstName, st.LastName LastName, st.Email Email \n" +
                         "FROM SelectedCourse  sc JOIN Student  st\n" +
                         "ON sc.StudentId = st.Id \n" +
                         "WHERE sc.CourseId = 2";
@@ -118,7 +118,7 @@ public class Teacher {
                 
                 Student s = new Student();
                 
-                s.studentId = resultSet.getString("StudentId");
+                s.id = Integer.parseInt(resultSet.getString("Id"));
                 s.firstName = resultSet.getString("FirstName");
                 s.lastName = resultSet.getString("LastName");
                 s.email = resultSet.getString("Email");

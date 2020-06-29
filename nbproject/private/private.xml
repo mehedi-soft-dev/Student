@@ -4,8 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Java/Student/src/Teacher.java</file>
+            <file>file:/D:/Java/Student/src/ScoreViewModel.java</file>
             <file>file:/D:/Java/Student/src/DBConnect.java</file>
             <file>file:/D:/Java/Student/src/Main.java</file>
+            <file>file:/D:/Java/Student/src/CourseViewModel.java</file>
             <file>file:/D:/Java/Student/src/Student.java</file>
         </group>
     </open-files>

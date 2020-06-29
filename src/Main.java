@@ -9,8 +9,6 @@ public class Main {
     private static final Student _currentStudent = new Student();
     
     public static void main(String[] args) {
-       //Student s = new Student();
-       //s.SearchCourseByTeacherName("Ray");
        Home();
     }
     
@@ -158,7 +156,7 @@ public class Main {
         
         System.out.println("\nStudent Dashboard\n");
         System.out.println("1. Choose Course");
-        System.out.println("2. View All Course");
+        System.out.println("2. View Selected Courses");
         System.out.println("3. Search Course By Teacher Name");
         System.out.println("4. View Scores");
         System.out.println("5. Log Out");
@@ -172,12 +170,21 @@ public class Main {
                 ChooseCourse();
                 StudentDashboard();
                 break;
+                
+            case 2:
+                ViewSelectedCourses();
+                StudentDashboard();
+                break;
             
             case 3:
                 SearchCourse();
                 StudentDashboard();
                 break;
                 
+            case 4:
+                ViewScores();
+                StudentDashboard();
+                break;
             case 5:
                 _currentTeacher.Id = 0;
                 System.out.println("Log Out Succesfully");
@@ -231,15 +238,6 @@ public class Main {
         System.out.print("\nEnter Course ID : ");
         courseId = Integer.parseInt(scanner.nextLine());
         
-        //boolean f = courses.contains(courseId);
-        
-        /*if(courses.contains(courseId) == false){
-            System.out.println("\nPlease Enter Valid Course Id\nPress Enter to Continue");
-            scanner.nextLine();
-            return;
-        }*/
-        
-        
         System.out.println("Available Courses");
         System.out.println("SL\tStudent Id\tStudent Name\t\tEmail");
         System.out.println("--\t----------\t------------\t\t-------");
@@ -251,7 +249,7 @@ public class Main {
         int s=1;
         while(stdit.hasNext()){
             Student std = stdit.next();
-            System.out.println(s++ +"\t"+std.studentId+"\t\t"+std.firstName+" "+std.lastName+"\t\t"+std.email);
+            System.out.println(s++ +"\t"+std.id+"\t\t"+std.firstName+" "+std.lastName+"\t\t"+std.email);
         }
         
         System.out.print("\nEnter Student ID : ");
@@ -327,6 +325,50 @@ public class Main {
         scanner.nextLine();
     }   
     private static void ViewScores(){
+        Scanner scanner = new Scanner(System.in);
+        List<ScoreViewModel> scores = new LinkedList<>();
+        int studentId = _currentStudent.id;
         
+        Student s = new Student();
+        scores = s.QueryingScores(studentId);
+        
+        
+        System.out.println("\nCourses Score\n");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher\t\t\tScore");
+        System.out.println("--\t-----------\t\t---------\t-------\t\t\t-----");
+        
+        Iterator<ScoreViewModel> it = scores.iterator();
+        int sl=1;
+        while(it.hasNext()){
+            ScoreViewModel svm = it.next();
+            System.out.println(sl++ +"\t"+svm.courseName+"\t\t\t"+svm.id+"\t\t"+svm.teacherName+"\t\t"+svm.score);
+        }
+        
+        System.out.print("\nPress Enter to Continue...");
+        scanner.nextLine();
+    }
+    
+    private static void ViewSelectedCourses(){
+        Scanner scanner = new Scanner(System.in);
+        List<CourseViewModel> courses = new LinkedList<>();
+        int studentId = _currentStudent.id;
+        
+        Student s = new Student();
+        courses = s.QueryingSelectedCourse(studentId);
+        
+        
+        System.out.println("\nSelected Courses\n");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
+        System.out.println("--\t-----------\t\t---------\t-------");
+        
+        Iterator<CourseViewModel> it = courses.iterator();
+        int sl=1;
+        while(it.hasNext()){
+            CourseViewModel cvm = it.next();
+            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
+        }
+        
+        System.out.print("\nPress Enter to Continue...");
+        scanner.nextLine();
     }
 }
