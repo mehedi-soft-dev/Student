@@ -116,7 +116,7 @@ public class Main {
             
             if(resultSet.next()){
                 isFound = true;
-                _currentStudent.Id = Integer.parseInt(resultSet.getString("Id").toString());
+                _currentStudent.id = Integer.parseInt(resultSet.getString("Id").toString());
             }
                 
             
@@ -204,12 +204,74 @@ public class Main {
         else
             System.out.println("Something went wrong");
     }
+    private static void GivingScore(){
+        Scanner scanner = new Scanner(System.in);
+        
+        int teacherId = _currentTeacher.Id;
+        int courseId = 0;
+        int studentId = 0;
+        int score = 0;
+        
+        System.out.println("\nGiving Score to the Student\n");
+        List<CourseViewModel> courses = new LinkedList<>();
+        Teacher t = new Teacher();
+        courses = t.SearchCourseByTeacherId(teacherId);
+        
+        System.out.println("Available Courses");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
+        System.out.println("--\t-----------\t\t---------\t-------");
+        
+        Iterator<CourseViewModel> cit = courses.iterator();
+        int sl=1;
+        while(cit.hasNext()){
+            CourseViewModel cvm = cit.next();
+            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
+        }
+        
+        System.out.print("\nEnter Course ID : ");
+        courseId = Integer.parseInt(scanner.nextLine());
+        
+        //boolean f = courses.contains(courseId);
+        
+        /*if(courses.contains(courseId) == false){
+            System.out.println("\nPlease Enter Valid Course Id\nPress Enter to Continue");
+            scanner.nextLine();
+            return;
+        }*/
+        
+        
+        System.out.println("Available Courses");
+        System.out.println("SL\tStudent Id\tStudent Name\t\tEmail");
+        System.out.println("--\t----------\t------------\t\t-------");
+        
+        List<Student> students = new LinkedList<>();
+        students = t.SearchStudentByCourseId(courseId);
+        
+        Iterator<Student> stdit = students.iterator();
+        int s=1;
+        while(stdit.hasNext()){
+            Student std = stdit.next();
+            System.out.println(s++ +"\t"+std.studentId+"\t\t"+std.firstName+" "+std.lastName+"\t\t"+std.email);
+        }
+        
+        System.out.print("\nEnter Student ID : ");
+        studentId = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter Score : ");
+        score = Integer.parseInt(scanner.nextLine());
+        
+        if(t.GivingScore(teacherId, studentId, courseId, score)){
+            System.out.println("\nSuccess.....");
+            System.out.println("\nPress Enter to Continue.....");
+            scanner.nextLine();
+        }
+            
+    }
     
     private static void ChooseCourse(){
         Scanner scanner = new Scanner(System.in);
         List<CourseViewModel> courses = new LinkedList<>();
         int courseId = 0;
-        int studentId = _currentStudent.Id;
+        int studentId = _currentStudent.id;
         
         Course c = new Course();
         courses = c.GetAllCourses();
@@ -263,43 +325,8 @@ public class Main {
         
         System.out.print("\nPress Enter to continue.......");
         scanner.nextLine();
-    }
-    
-    private static void GivingScore(){
-        Scanner scanner = new Scanner(System.in);
+    }   
+    private static void ViewScores(){
         
-        int teacherId = _currentTeacher.Id;
-        int courseId = 0;
-        int studentId = 0;
-        int score = 0;
-        
-        System.out.println("\nGiving Score to the Student\n");
-        List<CourseViewModel> courses = new LinkedList<>();
-        Teacher t = new Teacher();
-        courses = t.SearchCourseByTeacherId(teacherId);
-        
-        System.out.println("Available Courses");
-        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
-        System.out.println("--\t-----------\t\t---------\t-------");
-        
-        Iterator<CourseViewModel> it = courses.iterator();
-        int sl=1;
-        while(it.hasNext()){
-            CourseViewModel cvm = it.next();
-            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
-        }
-        
-        System.out.print("\nEnter Course ID : ");
-        courseId = Integer.parseInt(scanner.nextLine());
-        
-        if(!courses.contains(courseId)){
-            System.out.println("\nPlease Enter Valid Course Id\nPress Enter to Continue");
-            scanner.nextLine();
-            return;
-        }
-        
-        System.out.print("\nEnter Student ID : ");
-        studentId = Integer.parseInt(scanner.nextLine());
-            
     }
 }

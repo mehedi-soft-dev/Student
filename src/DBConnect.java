@@ -7,7 +7,7 @@ public class DBConnect {
     public Connection GetConnection(){
         try{
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl","hr","12345");
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:lms","hr","12345");
         }catch(ClassNotFoundException | SQLException ex){
             ex.printStackTrace();
         }

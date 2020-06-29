@@ -64,7 +64,7 @@ public class Teacher {
         Statement statement = null;
         ResultSet resultSet = null;
         String query = "SELECT c.Id CourseId, c.Name Course, t.FirstName||' '||t.LastName  Teacher FROM Course  c JOIN Teacher  t ON c.TeacherId = t.Id\n" +
-"WHERE c.TeacherId=(SELECT Id FROM Teacher WHERE Id = "+id+") ";
+"WHERE c.TeacherId=(SELECT Id FROM Teacher WHERE Id = "+teacherid+") ";
         
         try{
             DBConnect dbcon = new DBConnect();
@@ -103,8 +103,10 @@ public class Teacher {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        String query = "SELECT sc.Id CourseId, st.FirstName FirstName, t.LastName LastName FROM SelectedCourse  sc JOIN Student  st ON sc.StudentId = st.Id\n" +
-"WHERE sc.Id = "+courseId+") ";
+        String query = "SELECT st.StudentId StudentId, st.FirstName FirstName, st.LastName LastName, st.Email Email \n" +
+                        "FROM SelectedCourse  sc JOIN Student  st\n" +
+                        "ON sc.StudentId = st.Id \n" +
+                        "WHERE sc.CourseId = 2";
         
         try{
             DBConnect dbcon = new DBConnect();
@@ -116,9 +118,10 @@ public class Teacher {
                 
                 Student s = new Student();
                 
-                s.id = Integer.parseInt(resultSet.getString("courseId"));
-                s.firstName = resultSet.getString("Course");
-                s.lastName = resultSet.getString("Course");
+                s.studentId = resultSet.getString("StudentId");
+                s.firstName = resultSet.getString("FirstName");
+                s.lastName = resultSet.getString("LastName");
+                s.email = resultSet.getString("Email");
                 
                 students.add(s);
             }

@@ -9,6 +9,7 @@ import java.util.List;
 public class Student {
     
     int id;
+    String studentId;
     String firstName;
     String lastName;
     String email;
