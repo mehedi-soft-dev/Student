@@ -1,12 +1,35 @@
-CREATE DATABASE studentdb;
+CREATE DATABASE studendb;
 
-USE studentdb;
+CREATE TABLE Teacher(    
+	Id INT PRIMARY KEY AUTO_INCREMENT,    
+	FirstName VARCHAR(20),    
+	LastName VARCHAR(20),    
+	Email VARCHAR(30) 
+);
 
-CREATE TABLE Teacher(
-	Id INT PRIMARY KEY IDENTITY(1,1),
-	FirstName VARCHAR(20),
-	LastName VARCHAR(20),
-	Email VARCHAR(30),
-	ContactNo VARCHAR(15),
-	Address VARCHAR(50),
-)
+CREATE TABLE Course(
+	Id INT PRIMARY KEY AUTO_INCREMENT,
+    	Name VARCHAR (20),
+    	teacherId INT REFERENCES teacher(Id)
+);
+
+CREATE TABLE Student(    
+	Id INT PRIMARY KEY AUTO_INCREMENT,    
+	FirstName VARCHAR(20),    
+	LastName VARCHAR(20),    
+	Email VARCHAR(30) 
+);
+
+CREATE TABLE SelectedCourse(
+	Id INT PRIMARY KEY AUTO_INCREMENT,
+   	StudentId INT REFERENCES Student(Id),
+    	CourseId INT REFERENCES Course(Id)
+);
+
+CREATE TABLE Score(
+	Id INT PRIMARY KEY AUTO_INCREMENT,
+    	TeacherId INT REFERENCES Teacher(Id),
+   	StudentId INT REFERENCES Student(Id),
+   	CourseId INT REFERENCES Course(Id),
+    	Score INT
+);
