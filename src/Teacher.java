@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Teacher {
     
@@ -34,7 +36,105 @@ public class Teacher {
         return isAdded;
     }
     
-    public void GivingScore(){
+    public boolean GivingScore(int teacherId, int studentId, int courseId, int score){
+        boolean isAdded = false;
+        Connection connection = null;
+        Statement statement = null;
+        String query = "INSERT INTO Score (TeacherId, StudentId, CourseId, Score) VALUES("+teacherId+", "+studentId+","+courseId+","+score+")";
         
+        try{
+            DBConnect dbcon = new DBConnect();
+            connection = dbcon.GetConnection();
+            
+            statement = connection.createStatement();
+            int f = statement.executeUpdate(query);
+            
+            if(f>0){
+                isAdded = true;
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return isAdded;
+    }
+    
+    public List<CourseViewModel> SearchCourseByTeacherId(int teacherid){
+        List<CourseViewModel> courses = new LinkedList<>();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        String query = "SELECT c.Id CourseId, c.Name Course, t.FirstName||' '||t.LastName  Teacher FROM Course  c JOIN Teacher  t ON c.TeacherId = t.Id\n" +
+"WHERE c.TeacherId=(SELECT Id FROM Teacher WHERE Id = "+id+") ";
+        
+        try{
+            DBConnect dbcon = new DBConnect();
+            connection = dbcon.GetConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+            
+            while(resultSet.next()){
+                
+                CourseViewModel courseVM = new CourseViewModel();
+                
+                courseVM.id = Integer.parseInt(resultSet.getString("courseId"));
+                courseVM.courseName = resultSet.getString("Course");
+                courseVM.teacherName = resultSet.getString("Teacher");
+                
+                courses.add(courseVM);
+            }
+            
+        }catch(NumberFormatException | SQLException ex){
+            ex.printStackTrace();
+        }finally{
+            try{
+                resultSet.close();
+                statement.close();
+                connection.close();
+                
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+        }
+        return courses;
+    }
+    
+    public List<Student> SearchStudentByCourseId(int courseId){
+        List<Student> students = new LinkedList<>();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        String query = "SELECT sc.Id CourseId, st.FirstName FirstName, t.LastName LastName FROM SelectedCourse  sc JOIN Student  st ON sc.StudentId = st.Id\n" +
+"WHERE sc.Id = "+courseId+") ";
+        
+        try{
+            DBConnect dbcon = new DBConnect();
+            connection = dbcon.GetConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+            
+            while(resultSet.next()){
+                
+                Student s = new Student();
+                
+                s.id = Integer.parseInt(resultSet.getString("courseId"));
+                s.firstName = resultSet.getString("Course");
+                s.lastName = resultSet.getString("Course");
+                
+                students.add(s);
+            }
+            
+        }catch(NumberFormatException | SQLException ex){
+            ex.printStackTrace();
+        }finally{
+            try{
+                resultSet.close();
+                statement.close();
+                connection.close();
+                
+            }catch(SQLException ex){
+                ex.printStackTrace();
+            }
+        }
+        return students;
     }
 }

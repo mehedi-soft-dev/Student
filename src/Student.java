@@ -3,23 +3,47 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.LinkedList;
+import java.util.List;
 
 public class Student {
     
-    int Id;
-    String FirstName;
-    String LastName;
-    String Email;
-    String ContactNo;
-    String Address;
+    int id;
+    String firstName;
+    String lastName;
+    String email;
+    String contactNo;
+    String address;
     
-    public void ViewAllCourse(){
+    public boolean ChoosingACourse(int studentId, int CourseId){
         
+        boolean isAdded = false;
+        Connection connection = null;
+        Statement statement = null;
+        String query = "INSERT INTO SelectedCourse (StudentId, CourseId) VALUES("+studentId+", "+CourseId+")";
+        try{
+            DBConnect dbcon = new DBConnect();
+            connection = dbcon.GetConnection();
+            
+            statement = connection.createStatement();
+            int f = statement.executeUpdate(query);
+            
+            if(f>0){
+                isAdded = true;
+            }
+                
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return isAdded;
+    }
+    public List<CourseViewModel> SearchCourseByTeacherName(String teacherName){
+        List<CourseViewModel> courses = new LinkedList<>();
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        String query = "SELECT c.Name Course, t.FirstName||' '||t.LastName Teacher FROM Course c JOIN Teacher t ON c.TeacherId = t.Id";
+        String query = "SELECT c.Id CourseId, c.Name Course, t.FirstName||' '||t.LastName  Teacher FROM Course  c JOIN Teacher  t ON c.TeacherId = t.Id\n" +
+"WHERE c.TeacherId=(SELECT Id FROM Teacher WHERE FirstName Like '%"+teacherName+"%' OR LastName Like '%"+teacherName+"%')";
         
         try{
             DBConnect dbcon = new DBConnect();
@@ -27,20 +51,18 @@ public class Student {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             
-            System.out.println("Course\t\tTeacher");
-            System.out.println("------\t\t------");
-            
             while(resultSet.next()){
-                String course = resultSet.getString("Course").toString();
-                String teacher = resultSet.getString("Teacher").toString();
                 
-                System.out.println(course+"\t\t"+teacher);
+                CourseViewModel courseVM = new CourseViewModel();
                 
+                courseVM.id = Integer.parseInt(resultSet.getString("courseId"));
+                courseVM.courseName = resultSet.getString("Course");
+                courseVM.teacherName = resultSet.getString("Teacher");
+                
+                courses.add(courseVM);
             }
-           
-                
             
-        }catch(Exception ex){
+        }catch(NumberFormatException | SQLException ex){
             ex.printStackTrace();
         }finally{
             try{
@@ -52,13 +74,7 @@ public class Student {
                 ex.printStackTrace();
             }
         }
-        
-    }
-    public void ChoosingACourse(){
-        
-    }
-    public void QueryingCourseByTeacherName(){
-        
+        return courses;
     }
     public void QueryingSelectedCourse(){
         

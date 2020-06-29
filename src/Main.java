@@ -9,9 +9,9 @@ public class Main {
     private static final Student _currentStudent = new Student();
     
     public static void main(String[] args) {
-       Student s = new Student();
-       s.ViewAllCourse();
-        //Home();
+       //Student s = new Student();
+       //s.SearchCourseByTeacherName("Ray");
+       Home();
     }
     
     private static void Home(){
@@ -20,7 +20,8 @@ public class Main {
         System.out.print("Please Select One (1/2) : ");
         
         Scanner scanner = new Scanner(System.in);
-        int c = Integer.parseInt(scanner.nextLine());
+        int c = 0;
+        c = Integer.parseInt(scanner.nextLine());
         
         switch(c){
             case 1:
@@ -42,7 +43,7 @@ public class Main {
         String username = "";
         String password = "";
         
-        System.out.println("\nTeacher Login Panel\n");
+        System.out.println("\nTeacher's Login Panel\n");
         System.out.print("Enter Username : ");
         username = scanner.nextLine();
         System.out.print("Enter Password : ");
@@ -50,7 +51,7 @@ public class Main {
         
         if(IsTeacherLoginSuccess(username, password)){
             System.out.println("Login Succesfully\n");
-            TeachersDashboard();
+            TeacherDashboard();
         }
         else{
             System.out.println("Username or Password is incorrect");
@@ -58,7 +59,24 @@ public class Main {
         
     }
     private static void StudentLogin(){
+        
+        Scanner scanner = new Scanner(System.in);
+        String username = "";
+        String password = "";
+        
         System.out.println("\nStudent Login Panel\n");
+        System.out.print("Enter Username : ");
+        username = scanner.nextLine();
+        System.out.print("Enter Password : ");
+        password = scanner.nextLine();
+        
+        if(IsStudentLoginSuccess(username, password)){
+            System.out.println("Login Succesfully\n");
+            StudentDashboard();
+        }
+        else{
+            System.out.println("Username or Password is incorrect");
+        }
     }
     private static boolean IsTeacherLoginSuccess(String username, String password){
         
@@ -78,7 +96,6 @@ public class Main {
                _currentTeacher.Id = Integer.parseInt(resultSet.getString("Id"));
             }
                 
-            
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -97,17 +114,20 @@ public class Main {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             
-            if(resultSet.next())
+            if(resultSet.next()){
                 isFound = true;
+                _currentStudent.Id = Integer.parseInt(resultSet.getString("Id").toString());
+            }
+                
             
         }catch(Exception ex){
             ex.printStackTrace();
         }
         return isFound;
     }
-    private static void TeachersDashboard(){
+    private static void TeacherDashboard(){
         
-        System.out.println("\nTeacher's Dashboard\n");
+        System.out.println("\nTeacher Dashboard\n");
         System.out.println("1. Starting a Course");
         System.out.println("2. Giving Score to Student");
         System.out.println("3. Log Out\n");
@@ -119,10 +139,46 @@ public class Main {
         switch(c){
             case 1:
                 StartingNewCourse();
-                TeachersDashboard();
+                TeacherDashboard();
+                break;
+            
+            case 2:
+                GivingScore();
+                TeacherDashboard();
+                break;
+                
+            case 3:
+                _currentTeacher.Id = 0;
+                System.out.println("Log Out Succesfully");
+                Home();
+                break;
+        }
+    }
+    private static void StudentDashboard(){
+        
+        System.out.println("\nStudent Dashboard\n");
+        System.out.println("1. Choose Course");
+        System.out.println("2. View All Course");
+        System.out.println("3. Search Course By Teacher Name");
+        System.out.println("4. View Scores");
+        System.out.println("5. Log Out");
+        System.out.print("Choose an Option : ");
+        
+        Scanner scanner = new Scanner(System.in);
+        int c = Integer.parseInt(scanner.nextLine());
+        
+        switch(c){
+            case 1:
+                ChooseCourse();
+                StudentDashboard();
                 break;
             
             case 3:
+                SearchCourse();
+                StudentDashboard();
+                break;
+                
+            case 5:
                 _currentTeacher.Id = 0;
                 System.out.println("Log Out Succesfully");
                 Home();
@@ -131,6 +187,7 @@ public class Main {
     }
     
     private static void StartingNewCourse(){
+        
         Scanner scanner = new Scanner(System.in);
         String courseName = "";
         int teacherId = _currentTeacher.Id;
@@ -145,7 +202,104 @@ public class Main {
         if(isAdded)
             System.out.println("Successfully Started a Course");
         else
-            System.out.println("Somethin went wrong");
+            System.out.println("Something went wrong");
     }
     
+    private static void ChooseCourse(){
+        Scanner scanner = new Scanner(System.in);
+        List<CourseViewModel> courses = new LinkedList<>();
+        int courseId = 0;
+        int studentId = _currentStudent.Id;
+        
+        Course c = new Course();
+        courses = c.GetAllCourses();
+        
+        
+        System.out.println("\nStarting a new course\n");
+        System.out.println("Available Courses");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
+        System.out.println("--\t-----------\t\t---------\t-------");
+        
+        Iterator<CourseViewModel> it = courses.iterator();
+        int sl=1;
+        while(it.hasNext()){
+            CourseViewModel cvm = it.next();
+            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
+        }
+        
+        System.out.print("Choose Course ID : ");
+        courseId = Integer.parseInt(scanner.nextLine());
+        
+        Student s = new Student();
+        boolean isAdded = s.ChoosingACourse(studentId, courseId);
+        
+        if(isAdded){
+            System.out.println("Choosing Course Completed"); 
+            StudentDashboard();
+        }
+        else
+            System.out.println("Something went wrong");
+    }
+    private static void SearchCourse(){
+        Scanner scanner = new Scanner(System.in);
+        List<CourseViewModel> courses = new LinkedList<>();
+                
+        Student s = new Student();
+        
+        System.out.println("\nSearch Course by Teacher Name\n");
+        System.out.print("Enter Teacher Name : ");
+        String teacherName = scanner.nextLine();
+        courses = s.SearchCourseByTeacherName(teacherName);
+        System.out.println("Available Courses");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
+        System.out.println("--\t-----------\t\t---------\t-------");
+        
+        Iterator<CourseViewModel> it = courses.iterator();
+        int sl=1;
+        while(it.hasNext()){
+            CourseViewModel cvm = it.next();
+            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
+        }
+        
+        System.out.print("\nPress Enter to continue.......");
+        scanner.nextLine();
+    }
+    
+    private static void GivingScore(){
+        Scanner scanner = new Scanner(System.in);
+        
+        int teacherId = _currentTeacher.Id;
+        int courseId = 0;
+        int studentId = 0;
+        int score = 0;
+        
+        System.out.println("\nGiving Score to the Student\n");
+        List<CourseViewModel> courses = new LinkedList<>();
+        Teacher t = new Teacher();
+        courses = t.SearchCourseByTeacherId(teacherId);
+        
+        System.out.println("Available Courses");
+        System.out.println("SL\tCourse Name\t\tCourse ID\tTeacher");
+        System.out.println("--\t-----------\t\t---------\t-------");
+        
+        Iterator<CourseViewModel> it = courses.iterator();
+        int sl=1;
+        while(it.hasNext()){
+            CourseViewModel cvm = it.next();
+            System.out.println(sl++ +"\t"+cvm.courseName+"\t\t\t"+cvm.id+"\t\t"+cvm.teacherName);
+        }
+        
+        System.out.print("\nEnter Course ID : ");
+        courseId = Integer.parseInt(scanner.nextLine());
+        
+        if(!courses.contains(courseId)){
+            System.out.println("\nPlease Enter Valid Course Id\nPress Enter to Continue");
+            scanner.nextLine();
+            return;
+        }
+        
+        System.out.print("\nEnter Student ID : ");
+        studentId = Integer.parseInt(scanner.nextLine());
+            
+    }
 }
